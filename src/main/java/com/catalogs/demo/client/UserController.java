@@ -7,27 +7,27 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cliente")
-@CrossOrigin(origins = "*") // Para permitir tu cliente frontend
-public class ClientController {
+@RequestMapping("/users")
+@CrossOrigin(origins = "*")
+public class UserController {
 
     @Autowired
-    private ClientRepository clientRepository;
+    private UserRepository clientRepository;
 
     @GetMapping
-    public List<Client> getAll() {
+    public List<User> getAll() {
         return clientRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Client> getById(@PathVariable Long id) {
+    public ResponseEntity<User> getById(@PathVariable Long id) {
         return clientRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Client create(@RequestBody Client entidad) {
+    public User create(@RequestBody User entidad) {
         return clientRepository.save(entidad);
     }
 

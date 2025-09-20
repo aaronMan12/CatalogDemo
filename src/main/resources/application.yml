@@ -10,9 +10,13 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-    dll-auto: validate
+      dll-auto: validate
+      naming:
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
   properties:
     hibernate:
+      globally_quoted_identifiers: true
       dialect: org.hibernate.dialect.PostgreSQLDialect
       format_sql: true
       show_sql: true

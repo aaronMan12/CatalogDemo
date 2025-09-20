@@ -6,21 +6,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "client")
+@Table(name = "user", schema = "dbo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Client {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Integer idClient;
+    @Column(name = "id_user")
+    private  Integer idUser;
 
+    @Column(name = "id_status")
     private Integer idStatus;
 
     private String name;
-    private String firstName;
+    @Column(name = "first_last_name")
+    private String firstLastName;
+
+    @Column(name = "second_last_name")
     private String secondLastName;
+
+    @Column(name = "user_name")
     private String userName;
+
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "email")
     private String email;
 }
