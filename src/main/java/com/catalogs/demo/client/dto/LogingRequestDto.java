@@ -1,6 +1,5 @@
 package com.catalogs.demo.client.dto;
 
-import com.catalogs.demo.client.User;
 import lombok.*;
 
 @Data

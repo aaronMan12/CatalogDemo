@@ -10,7 +10,9 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 public class ResponseMessage {
+    private Integer status;
     private String message;
+    private Object data;
     private List<Map<String, String>> errors;
 
     public ResponseMessage(String message, List<Map<String, String >> errors){
@@ -18,7 +20,13 @@ public class ResponseMessage {
         this.errors = errors;
     }
 
+    public ResponseMessage(Integer status, String message){
+        this.status = status;
+        this.message = message;
+    }
+
     public ResponseMessage(String message){
         this.message = message;
     }
+
 }

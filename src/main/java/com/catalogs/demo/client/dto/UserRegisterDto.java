@@ -1,20 +1,19 @@
-package com.catalogs.demo.client;
+package com.catalogs.demo.client.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "user", schema = "dbo")
+import java.time.LocalDateTime;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class User {
+public class UserRegisterDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user")
@@ -48,4 +47,5 @@ public class User {
     @Email(message = "Email no valido")
     @Column(name = "email")
     private String email;
+
 }

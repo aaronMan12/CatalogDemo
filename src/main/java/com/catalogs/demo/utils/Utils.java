@@ -1,5 +1,6 @@
 package com.catalogs.demo.utils;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.validation.BindingResult;
 
 import java.util.HashMap;
@@ -17,5 +18,13 @@ public class Utils {
                     return errorMap;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public static String encryptPassword(String password){
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
+    public static boolean verifyPassword(String plaintPassword, String encryptPassword){
+        return BCrypt.checkpw(plaintPassword, encryptPassword);
     }
 }
