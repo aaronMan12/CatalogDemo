@@ -25,6 +25,12 @@ public class ResponseMessage {
         this.message = message;
     }
 
+    public ResponseMessage(Integer status, String message, Object data) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
+
     public ResponseMessage(String message){
         this.message = message;
     }

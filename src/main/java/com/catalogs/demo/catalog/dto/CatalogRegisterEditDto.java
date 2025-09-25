@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CatalogRegisterDto {
+public class CatalogRegisterEditDto {
+    private Integer idProductsCatalog;
+
     @NotNull(message = "El id del usuario es obligatorio")
     private Integer idUser;
 

@@ -1,7 +1,7 @@
-package com.catalogs.demo.catalog.controller;
+package com.catalogs.demo.product.controller;
 
-import com.catalogs.demo.catalog.dto.CatalogRegisterEditDto;
-import com.catalogs.demo.catalog.service.CatalogService;
+import com.catalogs.demo.product.dto.ProductRegisterEditDto;
+import com.catalogs.demo.product.service.ProductService;
 import com.catalogs.demo.response.ResponseMessage;
 import com.catalogs.demo.utils.Utils;
 import jakarta.validation.Valid;
@@ -14,20 +14,20 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/catalog")
-public class CatalogController {
+@RequestMapping("/product")
+public class ProductController {
 
     @Autowired
-    CatalogService catalogService;
+    ProductService productService;
 
-    @PostMapping()
-    public ResponseEntity<ResponseMessage> registerCatalog(@Valid @RequestBody CatalogRegisterEditDto catalog, BindingResult bindingResult){
+    @PostMapping
+    public ResponseEntity<ResponseMessage> registerProduct(@Valid @RequestBody ProductRegisterEditDto product, BindingResult bindingResult){
         try {
             if (bindingResult.hasErrors()){
                 List<Map<String, String>> errorList = Utils.getErrors(bindingResult);
                 return ResponseEntity.status(400).body(new ResponseMessage("Error de validación", errorList));
             }
-            ResponseMessage result = catalogService.registerCatalog(catalog);
+            ResponseMessage result = productService.registerProduct(product);
             return ResponseEntity.status(result.getStatus()).body(result);
         }catch (Exception e){
             return ResponseEntity.status(500).body(new ResponseMessage("Error en servidor: " + e.getMessage()));
@@ -35,16 +35,17 @@ public class CatalogController {
     }
 
     @PutMapping
-    public ResponseEntity<ResponseMessage> updateCatalog(@Valid @RequestBody CatalogRegisterEditDto catalog, BindingResult bindingResult){
+    public ResponseEntity<ResponseMessage> editProduct(@Valid @RequestBody ProductRegisterEditDto product, BindingResult bindingResult){
         try {
             if (bindingResult.hasErrors()){
                 List<Map<String, String>> errorList = Utils.getErrors(bindingResult);
                 return ResponseEntity.status(400).body(new ResponseMessage("Error de validación", errorList));
             }
-            ResponseMessage result = catalogService.editCatalog(catalog);
+            ResponseMessage result = productService.editProduct(product);
             return ResponseEntity.status(result.getStatus()).body(result);
         }catch (Exception e){
             return ResponseEntity.status(500).body(new ResponseMessage("Error en servidor: " + e.getMessage()));
         }
     }
+
 }

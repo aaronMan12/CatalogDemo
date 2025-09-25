@@ -1,7 +1,6 @@
 package com.catalogs.demo.catalog.service;
 
-import com.catalogs.demo.catalog.dto.CatalogEditDto;
-import com.catalogs.demo.catalog.dto.CatalogRegisterDto;
+import com.catalogs.demo.catalog.dto.CatalogRegisterEditDto;
 import com.catalogs.demo.catalog.entity.Catalog;
 import com.catalogs.demo.catalog.entity.CatalogCategory;
 import com.catalogs.demo.catalog.repository.CatalogCategoryRepository;
@@ -12,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class CatalogService {
@@ -21,25 +22,14 @@ public class CatalogService {
     @Autowired
     private CatalogCategoryRepository catalogCategoryRepository;
 
-    public ResponseMessage registerCatalog(CatalogRegisterDto catalog){
+    public ResponseMessage registerCatalog(CatalogRegisterEditDto catalog){
         //TODO-Vefificar que el usuario que va a registrar el catalogo exista
         try{
-        Integer validCategory = catalogCategoryRepository.existCatalogCategory(catalog.getIdCatalogType());
+        Integer existCategory = createCategoryCatalog(catalog);
 
-        if (validCategory == null) {
-            CatalogCategory reqNewCategory = new CatalogCategory();
-            reqNewCategory.setName(catalog.getCategory().getName());
-            reqNewCategory.setDescription(catalog.getCategory().getDescription());
-
-            CatalogCategory newCategory = catalogCategoryRepository.save(reqNewCategory);
-            if (newCategory != null){
-                System.out.println("Categoria creada");
-                catalog.setIdCatalogType(newCategory.getIdCatalogCategory());
-            }
-        }
         Catalog newCatalog = new Catalog();
         newCatalog.setIdUser(catalog.getIdUser());
-        newCatalog.setIdCatalogType(catalog.getIdCatalogType());
+        newCatalog.setIdCatalogType((existCategory != null) ?  existCategory : catalog.getIdCatalogType());
         newCatalog.setName(catalog.getName());
         Catalog catalogCreated = catalogRepository.save(newCatalog);
 
@@ -49,13 +39,50 @@ public class CatalogService {
             return new ResponseMessage(400, "Error al crear el catálogo");
         }
         }catch (Exception e){
+            e.printStackTrace();
             return new ResponseMessage(500, "Error de servidor");
         }
     }
 
-    public ResponseMessage editCatalog(@Valid CatalogEditDto catalog) {
-        //TODO, verificar si la categoria existe, si no es así registrarla
-        Integer catlogEditaded = catalogRepository.editCatalog(catalog.getIdCatalogType(), catalog.getName(), catalog.getIdProductsCatalog(), catalog.getIdUser());
-        return new ResponseMessage(200, "");
+    public ResponseMessage editCatalog(@Valid CatalogRegisterEditDto catalog) {
+
+        try {
+            //TODO, verificar si existe el catalogo a editar
+            Optional<Catalog> existCatalog  = catalogRepository.findById(Long.valueOf(catalog.getIdProductsCatalog()));
+            if (existCatalog.isEmpty()){
+                return new ResponseMessage(404, "Catálogo no encontrado");
+            }
+            //TODO, vefificar si existe la categoria, si no crearla
+            Integer existCategory = createCategoryCatalog(catalog);
+
+            Catalog catalogEditado = existCatalog.get();
+            catalogEditado.setIdCatalogType((existCategory != null) ?  existCategory : catalog.getIdCatalogType());
+            catalogEditado.setName(catalog.getName());
+
+            Catalog catalogEdited = catalogRepository.save(catalogEditado);
+
+            if (catalogEdited != null){
+                return new ResponseMessage(201, "Catalogo editado exitosamente");
+            }else {
+                return new ResponseMessage(400, "Error al editar catálogo");
+            }
+        } catch (Exception e) {
+            return new ResponseMessage(500, "Error de servidor");
+        }
+    }
+
+    private Integer createCategoryCatalog(CatalogRegisterEditDto catalog){
+        Integer validCategory = catalogCategoryRepository.existCatalogCategory(catalog.getIdCatalogType());
+        if (validCategory == null) {
+            CatalogCategory reqNewCategory = new CatalogCategory();
+            reqNewCategory.setName(catalog.getCategory().getName());
+            reqNewCategory.setDescription(catalog.getCategory().getDescription());
+
+            CatalogCategory newCategory = catalogCategoryRepository.save(reqNewCategory);
+            if (newCategory != null){
+                return newCategory.getIdCatalogCategory();
+            }
+        }
+        return null;
     }
 }
