@@ -2,23 +2,32 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+cloudinary:
+  cloud-name: "catalog"
+  api-key: "921583935643275"
+  api-secret: "vCu-SS0LuBwhxkY-KfXXhqVW4Ws"
+  secure: true
+app:
+  storage:
+    type: "cloudinary"
 spring:
   datasource:
     url: jdbc:postgresql://dpg-d32aq53uibrs739mpiqg-a.oregon-postgres.render.com/catalogs_hekw
-    password: GNdw5EdOFNMHQ2HQkAcN1cqEiPRBfePF
     username: aaron
+    password: GNdw5EdOFNMHQ2HQkAcN1cqEiPRBfePF
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      dll-auto: validate
-      naming:
+      ddl-auto: validate
+    properties:
+      hibernate:
         naming:
           physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-  properties:
-    hibernate:
-      globally_quoted_identifiers: true
-      dialect: org.hibernate.dialect.PostgreSQLDialect
-      format_sql: true
-      show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show_sql: true
+        globally_quoted_identifiers: true
     show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    sql:
+      init:
+        platform: postgresql

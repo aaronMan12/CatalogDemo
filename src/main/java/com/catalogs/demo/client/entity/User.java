@@ -42,6 +42,6 @@ public class User {
     @Column(name = "verified_email")
     private boolean verifiedEmail;
 
-    @Column(name = "cration_time")
+    @Column(name = "creation_time")
     private LocalDateTime creationTime;
 }
