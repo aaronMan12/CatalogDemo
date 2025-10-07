@@ -47,7 +47,6 @@ public class ProductService {
 
             Product newProduct = createEditProductFormat(product, editOption);
             newProduct.setIdProductsCatalog(existProduct.get().getIdProductsCatalog());
-            System.out.println(newProduct.toString());
 
             Product editedProduct = productRepository.save(newProduct);
 

@@ -1,10 +1,6 @@
 package com.catalogs.demo.client.controller;
 
-import com.catalogs.demo.client.UserLoginProjection;
-import com.catalogs.demo.client.dto.UserResponseDto;
-import com.catalogs.demo.client.entity.User;
 import com.catalogs.demo.client.dto.LogingRequestDto;
-import com.catalogs.demo.client.dto.LogingResponseDto;
 import com.catalogs.demo.client.dto.UserRegisterDto;
 import com.catalogs.demo.client.service.UserService;
 import com.catalogs.demo.response.ResponseMessage;
@@ -26,8 +22,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/loging")
-    public ResponseEntity<ResponseMessage> loging(@RequestBody LogingRequestDto logingRequest){
+    @PostMapping("/login")
+    public ResponseEntity<ResponseMessage> login(@RequestBody LogingRequestDto logingRequest){
         try {
             ResponseMessage result = userService.logingUser(logingRequest);
             return ResponseEntity.status(result.getStatus()).body(result);
@@ -50,5 +46,4 @@ public class UserController {
             return ResponseEntity.status(500).body(new ResponseMessage("Error en servidor: " + e.getMessage()));
         }
     }
-
 }

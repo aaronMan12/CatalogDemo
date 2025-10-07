@@ -1,12 +1,12 @@
 package com.catalogs.demo.client.service;
 
-import com.catalogs.demo.client.UserLoginProjection;
 import com.catalogs.demo.client.dto.LogingRequestDto;
 import com.catalogs.demo.client.dto.LogingResponseDto;
 import com.catalogs.demo.client.dto.UserRegisterDto;
 import com.catalogs.demo.client.entity.User;
 import com.catalogs.demo.client.repository.UserRepository;
 import com.catalogs.demo.response.ResponseMessage;
+import com.catalogs.demo.utils.JwtTokenProvider;
 import com.catalogs.demo.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     public ResponseMessage registerUser(UserRegisterDto user){
         Integer userExist = userRepository.vefiriqueUser(user.getUserName(), user.getEmail());
@@ -42,22 +45,23 @@ public class UserService {
     }
 
     public ResponseMessage logingUser(LogingRequestDto logingRequestDto){
-        UserLoginProjection userLoginProjection = userRepository.loging(logingRequestDto.getUserName(), logingRequestDto.getPassword());
-        if (userLoginProjection != null){
-            LogingResponseDto logingResponseDto = new LogingResponseDto(
-                    userLoginProjection.getName(),
-                    userLoginProjection.getUserName(),
-                    userLoginProjection.getFullName(),
-                    userLoginProjection.getFirstLastName(),
-                    userLoginProjection.getSecondLastName(),
-                    true, "exitoso");
+        String safePassword = getUserPasswordEncrypt(logingRequestDto.getUserName());
+        boolean equalsPassword = Utils.verifyPassword(logingRequestDto.getPassword(), safePassword);
 
-                    ResponseMessage msj = new ResponseMessage(200, "Usuario logueado Token");
-                    msj.setData(logingResponseDto);
-                    return msj;
+        if (equalsPassword){
+            LogingResponseDto logingResponseDto = userRepository.loging(logingRequestDto.getUserName());
+            String token = jwtTokenProvider.generateToken(logingRequestDto.getUserName());
+
+            logingResponseDto.setToken(token);
+
+            return new ResponseMessage(200, "Usuario logueado Token", logingResponseDto);
         }else{
             return new ResponseMessage (400 ,"Error de credenciales");
         }
+    }
+
+    private String getUserPasswordEncrypt(String userName){
+        return userRepository.getUserPassword(userName);
     }
 
 }

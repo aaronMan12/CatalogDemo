@@ -47,7 +47,6 @@ public class CatalogService {
     public ResponseMessage editCatalog(@Valid CatalogRegisterEditDto catalog) {
 
         try {
-            //TODO, verificar si existe el catalogo a editar
             Optional<Catalog> existCatalog  = catalogRepository.findById(Long.valueOf(catalog.getIdProductsCatalog()));
             if (existCatalog.isEmpty()){
                 return new ResponseMessage(404, "Catálogo no encontrado");

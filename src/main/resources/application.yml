@@ -2,6 +2,9 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+jwt:
+  secret: "miClaveSuperSeguraDe32Caracteres1234567890abcdefghijklmnopqr"
+  expiration: 86400000
 cloudinary:
   cloud-name: "catalog"
   api-key: "921583935643275"

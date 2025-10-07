@@ -5,19 +5,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class LogingResponseDto {
     private String name;
     private String userName;
     private String fullName;
     private String firstLastName;
     private String secondLastName;
-    private boolean success;
-    private String message;
+    private String token;
 
-    public LogingResponseDto(boolean success, String message){
-        this.success = success;
-        this.message = message;
+    public LogingResponseDto(String name, String userName, String fullName, String firstLastName, String secondLastName) {
+        this.name = name;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.firstLastName = firstLastName;
+        this.secondLastName = secondLastName;
     }
 }
