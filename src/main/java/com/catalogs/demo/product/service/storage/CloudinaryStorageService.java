@@ -1,8 +1,10 @@
 package com.catalogs.demo.product.service.storage;
 
+import com.catalogs.demo.product.dto.ImageUpload;
 import com.catalogs.demo.product.service.repository.StorageService;
 import com.catalogs.demo.response.ResponseMessage;
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +17,7 @@ import java.util.UUID;
 public class CloudinaryStorageService implements StorageService {
 
     @Autowired
-    Cloudinary cloudinary;
+    Cloudinary cloudinary;  //= C;
 
     @Override
     public ResponseMessage uploadFile(MultipartFile file, String folderPath) {
@@ -24,8 +26,6 @@ public class CloudinaryStorageService implements StorageService {
             uploadParams.put("folder", "mvp/products/" + folderPath);
             uploadParams.put("public_id", generatePublicId(file.getOriginalFilename()));
             uploadParams.put("resource_type", "image");
-
-            // Optimizaciones automáticas
             uploadParams.put("quality", "auto:good");
             uploadParams.put("fetch_format", "auto");
 
@@ -36,47 +36,46 @@ public class CloudinaryStorageService implements StorageService {
             );
 
             String imageUrl = (String) uploadResult.get("secure_url");
+            String publicUrl = (String) uploadResult.get("public_id");
 
-            if (imageUrl.isEmpty()){
-                return new ResponseMessage(201, "Imagen subída corractamente", imageUrl);
+            ImageUpload imagenSubída = new ImageUpload(imageUrl, publicUrl);
+
+            if (!imageUrl.isEmpty()){
+                return new ResponseMessage(201, "Imagen subída corractamente", imagenSubída);
             }else{
                 return  new ResponseMessage(402, "Error al subír la imagen");
             }
 
         }catch (Exception e){
-            return new ResponseMessage(500, "Error al subír la imagen:" + e.getMessage());
+            System.err.println("❌ Error en Cloudinary: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseMessage(500, "Error al subir la imagen: " + e.getMessage());
         }
 
-    }
-
- /*   @Override
-    public ResponseMessage deleteFile(String fileUrl) {
-        try{
-            String publicId = extractPublicIdFromUrl(fileUrl);
-            Map<String, Object> deleteResult = cloudinary.uploader()
-                    .destroy(publicId, ObjectUtils.emptyMap());
-
-            String res = (String) deleteResult.get("result");
-            if (res.equals("ok")){
-                return new ResponseMessage(200, "Imagen eliminada correctamente");
-            } else {
-                return new ResponseMessage(400, "No se pudo eliminar la imagen");
-            }
-        }catch (Exception e){
-            return new ResponseMessage(500, "Error al borrar la imagen:" + e.getMessage());
-        }
     }
 
     @Override
-    public ResponseMessage getFileUrl(String filePath) {
+    public ResponseMessage deleteFile(String publicId) {  // Cambié el parámetro a publicId
         try {
-            String url = cloudinary.url().generate(filePath);
-            return new ResponseMessage(200, "URL generada", url);
+            Map<String, Object> deleteResult = cloudinary.uploader()
+                    .destroy(publicId, ObjectUtils.emptyMap());
+
+            //cloudinary.uploader().destroy(publicId, );
+
+            String result = (String) deleteResult.get("result");
+
+            System.out.println("Resultado de la eliminación: " + result);
+
+            if ("ok".equals(result)) {
+                return new ResponseMessage(200, "Imagen eliminada correctamente");
+            } else {
+                return new ResponseMessage(400, "No se pudo eliminar la imagen. Resultado: " + result);
+            }
         } catch (Exception e) {
-            return new ResponseMessage(500, "Error generando URL: " + e.getMessage());
+            return new ResponseMessage(500, "Error al borrar la imagen: " + e.getMessage());
         }
     }
-*/
+
     private String generatePublicId(String originalFileName) {
         String baseName = "product";
         if (originalFileName != null && originalFileName.contains(".")) {
@@ -89,19 +88,4 @@ public class CloudinaryStorageService implements StorageService {
         // Ejemplo: "product_1645678901234_abc123"
         return baseName + "_" + timestamp + "_" + randomId;
     }
-
-  /*  private String extractPublicIdFromUrl(String fileUrl) {
-        try {
-            String basePath = "mvp/products/";
-            int baseIndex = fileUrl.indexOf(basePath);
-            if (baseIndex != -1) {
-                String pathWithExtension = fileUrl.substring(baseIndex);
-                return pathWithExtension.substring(0, pathWithExtension.lastIndexOf('.'));
-            }
-            throw new RuntimeException("No se pudo extraer public_id de la URL");
-        } catch (Exception e) {
-            throw new RuntimeException("Error extrayendo public_id: " + e.getMessage());
-        }
-    }*/
-
 }

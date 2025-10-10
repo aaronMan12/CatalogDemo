@@ -37,15 +37,18 @@ public class UserService {
                     //Mandar el código de verificación al usuario al correo
                     return new ResponseMessage(201, "Usuario creado exitosamente");
                 }else{
-                    return new ResponseMessage(406, "Error al crear usuario");
+                    return new ResponseMessage(409, "Error al crear usuario");
                 }
             }else{
-                return new ResponseMessage(406, "El nombre de usuario o Email ya fueron usados, ingrese uno diferente");
+                return new ResponseMessage(409, "El nombre de usuario o Email ya fueron usados, ingrese uno diferente");
             }
     }
 
     public ResponseMessage logingUser(LogingRequestDto logingRequestDto){
         String safePassword = getUserPasswordEncrypt(logingRequestDto.getUserName());
+        if (safePassword == null) {
+            return new ResponseMessage(404, "Usuario no encontrado");
+        }
         boolean equalsPassword = Utils.verifyPassword(logingRequestDto.getPassword(), safePassword);
 
         if (equalsPassword){
@@ -56,7 +59,7 @@ public class UserService {
 
             return new ResponseMessage(200, "Usuario logueado Token", logingResponseDto);
         }else{
-            return new ResponseMessage (400 ,"Error de credenciales");
+            return new ResponseMessage (401 ,"Error de credenciales");
         }
     }
 

@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = """
             select 1
             from dbo."user" u
-            where u.user_name = ?1 or u.password = ?2
+            where u.user_name = ?1 or u.email = ?2
             """, nativeQuery = true)
     Integer vefiriqueUser(String userName, String email);
 

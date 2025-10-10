@@ -6,14 +6,26 @@ jwt:
   secret: "miClaveSuperSeguraDe32Caracteres1234567890abcdefghijklmnopqr"
   expiration: 86400000
 cloudinary:
-  cloud-name: "catalog"
+  cloud-name: "dcsp2vbm0"
   api-key: "921583935643275"
   api-secret: "vCu-SS0LuBwhxkY-KfXXhqVW4Ws"
   secure: true
 app:
   storage:
     type: "cloudinary"
+    max-file-size: 5242880
+    max-images-per-product: 2
+    allowed-image-types:
+      - "image/jpeg"
+      - "image/png"
+      - "image/webp"
+      - "image/gif"
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      enabled: true
   datasource:
     url: jdbc:postgresql://dpg-d32aq53uibrs739mpiqg-a.oregon-postgres.render.com/catalogs_hekw
     username: aaron
