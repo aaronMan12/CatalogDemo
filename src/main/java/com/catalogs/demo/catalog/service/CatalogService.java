@@ -33,13 +33,10 @@ public class CatalogService {
         newCatalog.setName(catalog.getName());
         Catalog catalogCreated = catalogRepository.save(newCatalog);
 
-        if (catalogCreated != null){
-            return new ResponseMessage(201, "Catalogo creado exitosamente");
-        }else {
-            return new ResponseMessage(400, "Error al crear el catálogo");
-        }
+        return catalogCreated != null
+                    ? new ResponseMessage(201, "Catalogo creado exitosamente")
+                    : new ResponseMessage(400, "Error al crear el catálogo");
         }catch (Exception e){
-            e.printStackTrace();
             return new ResponseMessage(500, "Error de servidor");
         }
     }
@@ -60,11 +57,7 @@ public class CatalogService {
 
             Catalog catalogEdited = catalogRepository.save(catalogEditado);
 
-            if (catalogEdited != null){
-                return new ResponseMessage(201, "Catalogo editado exitosamente");
-            }else {
-                return new ResponseMessage(400, "Error al editar catálogo");
-            }
+            return (catalogEdited != null) ? new ResponseMessage(201, "Catalogo editado exitosamente") : new ResponseMessage(400, "Error al editar catálogo");
         } catch (Exception e) {
             return new ResponseMessage(500, "Error de servidor");
         }

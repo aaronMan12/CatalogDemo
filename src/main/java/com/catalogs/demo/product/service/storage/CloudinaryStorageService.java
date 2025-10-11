@@ -55,24 +55,14 @@ public class CloudinaryStorageService implements StorageService {
     }
 
     @Override
-    public ResponseMessage deleteFile(String publicId) {  // Cambié el parámetro a publicId
+    public boolean deleteFile(String publicId) {  // Cambié el parámetro a publicId
         try {
             Map<String, Object> deleteResult = cloudinary.uploader()
                     .destroy(publicId, ObjectUtils.emptyMap());
-
-            //cloudinary.uploader().destroy(publicId, );
-
-            String result = (String) deleteResult.get("result");
-
-            System.out.println("Resultado de la eliminación: " + result);
-
-            if ("ok".equals(result)) {
-                return new ResponseMessage(200, "Imagen eliminada correctamente");
-            } else {
-                return new ResponseMessage(400, "No se pudo eliminar la imagen. Resultado: " + result);
-            }
+            return "ok".equals(deleteResult.get("result"));
         } catch (Exception e) {
-            return new ResponseMessage(500, "Error al borrar la imagen: " + e.getMessage());
+            System.err.println("❌ Error eliminando archivo de Cloudinary: " + e.getMessage());
+            return false;
         }
     }
 
@@ -84,8 +74,6 @@ public class CloudinaryStorageService implements StorageService {
 
         String timestamp = String.valueOf(System.currentTimeMillis());
         String randomId = UUID.randomUUID().toString().substring(0, 8);
-
-        // Ejemplo: "product_1645678901234_abc123"
         return baseName + "_" + timestamp + "_" + randomId;
     }
 }

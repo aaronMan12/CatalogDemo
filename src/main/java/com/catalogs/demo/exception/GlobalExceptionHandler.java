@@ -1,6 +1,7 @@
 package com.catalogs.demo.exception;
 
 import com.catalogs.demo.response.ResponseMessage;
+import org.apache.catalina.authenticator.NonLoginAuthenticator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,4 +21,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(413) // 413 Payload Too Large
                 .body(new ResponseMessage(413, errorMessage));
     }
+
+   /* @ExceptionHandler(NonLoginAuthenticator.class)
+    public ResponseEntity<ResponseMessage> handleNoAutozation(NonLoginAuthenticator exc){
+        return ResponseEntity.status(413) // 413 Payload Too Large
+                .body(new ResponseMessage(413, "Usuario no autorizado"));
+    }*/
 }

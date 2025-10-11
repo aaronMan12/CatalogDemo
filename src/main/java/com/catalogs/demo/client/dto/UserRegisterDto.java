@@ -17,7 +17,7 @@ public class UserRegisterDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user")
-    private  Integer idUser;
+    private Integer idUser;
 
     @NotNull(message = "El estatus es obligatorio")
     @Column(name = "id_status")
@@ -47,5 +47,4 @@ public class UserRegisterDto {
     @Email(message = "Email no valido")
     @Column(name = "email")
     private String email;
-
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,9 +39,10 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "verified_email")
-    private boolean verifiedEmail;
-
+    @CreationTimestamp
     @Column(name = "creation_time")
     private LocalDateTime creationTime;
+
+    @Column(name = "verified_email")
+    private boolean verifiedEmail;
 }

@@ -44,4 +44,9 @@ public class ImageProducts {
         this.imgLink = imageUpload.getImgLink();
         this.publicId = imageUpload.getPublicId();
     }
+
+    public void getNewImage(ImageUpload updateImage) {
+        this.imgLink = updateImage.getImgLink();
+        this.publicId = updateImage.getPublicId();
+    }
 }

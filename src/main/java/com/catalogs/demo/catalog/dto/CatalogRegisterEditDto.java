@@ -22,6 +22,5 @@ public class CatalogRegisterEditDto {
     private String name;
 
     private CatalogCategory category;
-
 }
 

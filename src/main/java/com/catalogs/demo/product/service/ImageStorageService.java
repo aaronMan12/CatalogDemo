@@ -31,69 +31,76 @@ public class ImageStorageService {
     }
 
     public ResponseMessage saveProductImage(MultipartFile image, Integer productId) {
-            //1. validación del máximo de imagenes por producto, 2 Máximo actualmente
-            int countImages = validateMaxImages(productId);
+        int countImages = imageProductRepository.countByProductId(productId);
 
-            if (countImages >= MAX_IMAGES_PER_PRODUCT) {
-                return new ResponseMessage(400, "Solo se pueden subir máximo " + MAX_IMAGES_PER_PRODUCT + " imágenes por producto");
-            }
+        if (countImages >= MAX_IMAGES_PER_PRODUCT) {
+            return new ResponseMessage(400, "Solo se pueden subir máximo " + MAX_IMAGES_PER_PRODUCT + " imágenes por producto");
+        }
 
         try {
-            ResponseMessage uploadResult = new ResponseMessage();
-            //2. Setear en que posición se sibíra la imagen y subírla
-            if (countImages == 0){
-                uploadResult = storageService.uploadFile(image, productId.toString()+"/"+1);
-            }else {
-                Integer position = countImages +1;
-                uploadResult = storageService.uploadFile(image, productId.toString()+"/"+position.toString());
-            }
+            String folderPath = buildFolderPath(productId, countImages);
+            ResponseMessage uploadResult = storageService.uploadFile(image, folderPath);
 
-            //Insertar la imagen en la base de datos
             if (uploadResult.getStatus() == 201) {
-                ImageProducts newImageSaved = new ImageProducts(productId, (ImageUpload) uploadResult.getData());
-                ImageProducts imageSaved = imageProductRepository.save(newImageSaved);
-                    return new ResponseMessage(200, "Imagen subida exitosamente", imageSaved);
-            } else {
-                return new ResponseMessage(400, "Error al subir imagen", uploadResult.getErrors());
+                ImageProducts savedImage = imageProductRepository.save(
+                        new ImageProducts(productId, (ImageUpload) uploadResult.getData())
+                );
+                return new ResponseMessage(200, "Imagen subida exitosamente", savedImage);
             }
+            return new ResponseMessage(400, "Error al subir imagen", uploadResult.getErrors());
 
         } catch (Exception e) {
-            System.out.println("Error en subír archivos: " + e.getMessage());
-            return new ResponseMessage(500, "Error interno: " + e.getMessage());
+            return handleException("Error en subir archivos: ", e);
         }
     }
 
 
     public ResponseMessage updateProductImage(MultipartFile image, Integer productId, Integer position) {
-        if (position < 1 || position > 2){
-            return new ResponseMessage(400, "Posición debe ser entre 1 y 2");
+        if (position < 1 || position > MAX_IMAGES_PER_PRODUCT) {
+            return new ResponseMessage(400, "Posición debe ser entre 1 y " + MAX_IMAGES_PER_PRODUCT);
         }
 
-        //1.- Obtener las imagenes que ya estan guardadas
-        List<ImageProducts> productImages = imageProductRepository.findProductImagesByIdProductAsc(productId);
+        try {
+            ImageProducts existingImage = getImageByPosition(productId, position);
+            if (existingImage == null) {
+                return new ResponseMessage(404, "No existe imagen en la posición " + position);
+            }
 
-        ImageProducts productsForUpdate = productImages.get(position-1);
+            // Eliminar imagen anterior
+            if (!storageService.deleteFile(existingImage.getPublicId())) {
+                System.out.println("Advertencia: No se pudo eliminar imagen anterior de Cloudinary");
+            }
 
-        //2.- Eliminar de Cloudinary el recurso actual
-        System.out.println("Eliminar este recurso: " + productsForUpdate.getImgLink());
+            // Subir nueva imagen
+            ResponseMessage uploadResult = storageService.uploadFile(image,
+                    productId.toString() + "/" + position);
 
-        String oldPublicId = productsForUpdate.getPublicId();
+            if (uploadResult.getStatus() == 201) {
+                ImageUpload newImageData = (ImageUpload) uploadResult.getData();
+                existingImage.getNewImage(newImageData);
 
-        if (!oldPublicId.isEmpty()){
-            storageService.deleteFile(oldPublicId);
+                ImageProducts updatedImage = imageProductRepository.save(existingImage);
+                return new ResponseMessage(200, "Imagen actualizada exitosamente", updatedImage);
+            }
+            return new ResponseMessage(400, "Error al subir imagen", uploadResult.getErrors());
+
+        } catch (Exception e) {
+            return handleException("Error actualizando imagen: ", e);
         }
-
-        //3.- Subír el nuevo recurso
-
-        //4.- Recuperar el nuevo URL y actulaizar el objeto
-
-        //5.- Mandar si es que se actualizo la imagen correctamente
-
-
-        return new ResponseMessage(200, "Test de actualización de imagenes");
     }
 
-    private int validateMaxImages(Integer productId) {
-        return imageProductRepository.countByProductId(productId);
+    private String buildFolderPath(Integer productId, int currentImageCount) {
+        int nextPosition = (currentImageCount == 0) ? 1 : currentImageCount + 1;
+        return productId.toString() + "/" + nextPosition;
+    }
+
+    private ImageProducts getImageByPosition(Integer productId, Integer position) {
+        List<ImageProducts> productImages = imageProductRepository.findProductImagesByIdProductAsc(productId);
+        return (position <= productImages.size()) ? productImages.get(position - 1) : null;
+    }
+
+    private ResponseMessage handleException(String message, Exception e) {
+        System.out.println(message + e.getMessage());
+        return new ResponseMessage(500, "Error interno: " + e.getMessage());
     }
 }
