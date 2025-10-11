@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LogingResponseDto {
+    private Integer idUSer;
     private String name;
     private String userName;
     private String fullName;
@@ -15,7 +16,8 @@ public class LogingResponseDto {
     private String secondLastName;
     private String token;
 
-    public LogingResponseDto(String name, String userName, String fullName, String firstLastName, String secondLastName) {
+    public LogingResponseDto(Integer idUSer, String name, String userName, String fullName, String firstLastName, String secondLastName) {
+        this.idUSer = idUSer;
         this.name = name;
         this.userName = userName;
         this.fullName = fullName;

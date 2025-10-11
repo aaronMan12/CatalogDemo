@@ -54,7 +54,6 @@ public class ImageStorageService {
         }
     }
 
-
     public ResponseMessage updateProductImage(MultipartFile image, Integer productId, Integer position) {
         if (position < 1 || position > MAX_IMAGES_PER_PRODUCT) {
             return new ResponseMessage(400, "Posición debe ser entre 1 y " + MAX_IMAGES_PER_PRODUCT);

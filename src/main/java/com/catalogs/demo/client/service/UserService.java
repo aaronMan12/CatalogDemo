@@ -53,7 +53,10 @@ public class UserService {
 
         if (equalsPassword){
             LogingResponseDto logingResponseDto = userRepository.loging(logingRequestDto.getUserName());
-            String token = jwtTokenProvider.generateToken(logingRequestDto.getUserName());
+
+            System.out.println(logingResponseDto.toString());
+
+            String token = jwtTokenProvider.generateToken(logingResponseDto.getIdUSer() , logingRequestDto.getUserName());
 
             logingResponseDto.setToken(token);
 

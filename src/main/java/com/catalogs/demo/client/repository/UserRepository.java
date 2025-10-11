@@ -6,15 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query(value = """
-        select 
-            u.name, 
-            u.user_name, 
-            concat(u.name, ' ', u.first_last_name, ' ' , u.second_last_name) as full_name, 
-            u.first_last_name,
-            u.second_last_name
-        from dbo.user u 
-        where u.user_name = ?1 
+    @Query(value = """ 
+ 	select 
+        u.id_user,
+        u.user_name,
+        u.name,  
+        concat(u.name, ' ', u.first_last_name, ' ' , u.second_last_name) as full_name, 
+        u.first_last_name,
+        u.second_last_name
+    from dbo.user u 
+    where u.user_name = ?1 
         """, nativeQuery = true)
     LogingResponseDto loging(String userName);
 

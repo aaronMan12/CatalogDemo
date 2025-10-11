@@ -21,12 +21,9 @@ public class JwtTokenProvider {
 
     private SecretKey getSigningKey() {
         try {
-
             if (jwtSecretString.length() < 32) {
                 throw new IllegalArgumentException("La clave JWT debe tener al menos 32 caracteres");
             }
-
-            // Convertir a bytes y crear la clave
             byte[] keyBytes = jwtSecretString.getBytes();
             return Keys.hmacShaKeyFor(keyBytes);
         } catch (Exception e) {
@@ -34,7 +31,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public String generateToken(String userName) {
+    public String generateToken(Integer idUSer, String userName) {
         try {
             Date now = new Date();
             Date expiryDate = new Date(now.getTime() + this.jwtExpiration);
